@@ -12,7 +12,8 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddDbContext<ShiftsDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString())
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+
         builder.Services.AddControllers();
 
         var app = builder.Build();

@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ShiftsLogger.Data\ShiftsLogger.Data.csproj" />
+  </ItemGroup>
+
 </Project>

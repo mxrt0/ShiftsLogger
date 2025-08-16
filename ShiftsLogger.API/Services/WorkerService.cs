@@ -1,8 +1,8 @@
-﻿using ShiftsLogger.API.DTOs;
-using ShiftsLogger.API.Exceptions;
+﻿using ShiftsLogger.API.Exceptions;
 using ShiftsLogger.API.Mappers;
 using ShiftsLogger.API.Services.Contracts;
 using ShiftsLogger.Data.Context;
+using ShiftsLogger.Data.DTOs;
 using ShiftsLogger.Data.Entities;
 
 namespace ShiftsLogger.API.Services;
@@ -14,7 +14,7 @@ public class WorkerService : IWorkerService
     {
         _dbContext = dbContext;
     }
-    public void AddWorker(WorkerDto workerDto)
+    public void AddWorker(CreateWorkerDto workerDto)
     {
         var worker = new Worker();
         WorkerMapper.ToEntity(workerDto, worker);
@@ -34,12 +34,12 @@ public class WorkerService : IWorkerService
         throw new WorkerNotFoundException("No worker with this ID exists.");
     }
 
-    public List<WorkerDto> GetAllWorkers()
+    public List<CreateWorkerDto> GetAllWorkers()
     {
         return _dbContext.Workers.Select(w => w.ToWorkerDto()).ToList();
     }
 
-    public void UpdateWorker(int workerId, WorkerDto newWorkerDto)
+    public void UpdateWorker(int workerId, CreateWorkerDto newWorkerDto)
     {
         var workerToUpdate = _dbContext.Workers.FirstOrDefault(w => w.Id == workerId);
         if (workerToUpdate is not null)

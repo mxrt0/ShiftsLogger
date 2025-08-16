@@ -1,8 +1,8 @@
-﻿using ShiftsLogger.API.DTOs;
-using ShiftsLogger.API.Exceptions;
+﻿using ShiftsLogger.API.Exceptions;
 using ShiftsLogger.API.Mappers;
 using ShiftsLogger.API.Services.Contracts;
 using ShiftsLogger.Data.Context;
+using ShiftsLogger.Data.DTOs;
 using ShiftsLogger.Data.Entities;
 
 namespace ShiftsLogger.API.Services;

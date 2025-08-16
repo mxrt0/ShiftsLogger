@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShiftsLogger.API.DTOs;
 using ShiftsLogger.API.Exceptions;
 using ShiftsLogger.API.Services.Contracts;
+using ShiftsLogger.Data.DTOs;
 
 namespace ShiftsLogger.API.Controllers
 {
@@ -17,7 +17,7 @@ namespace ShiftsLogger.API.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult AddWorker([FromBody] WorkerDto worker)
+        public IActionResult AddWorker([FromBody] CreateWorkerDto worker)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace ShiftsLogger.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateWorker(int id, WorkerDto newWorkerDto)
+        public IActionResult UpdateWorker(int id, CreateWorkerDto newWorkerDto)
         {
             try
             {

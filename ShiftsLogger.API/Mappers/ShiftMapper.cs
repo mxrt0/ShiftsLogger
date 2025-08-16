@@ -1,4 +1,4 @@
-﻿using ShiftsLogger.API.DTOs;
+﻿using ShiftsLogger.Data.DTOs;
 using ShiftsLogger.Data.Entities;
 
 namespace ShiftsLogger.API.Mappers;

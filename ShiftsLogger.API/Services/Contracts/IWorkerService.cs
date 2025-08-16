@@ -1,11 +1,11 @@
-﻿using ShiftsLogger.API.DTOs;
+﻿using ShiftsLogger.Data.DTOs;
 
 namespace ShiftsLogger.API.Services.Contracts;
 
 public interface IWorkerService
 {
-    void AddWorker(WorkerDto worker);
+    void AddWorker(CreateWorkerDto worker);
     void DeleteWorker(int workerId);
-    void UpdateWorker(int workerId, WorkerDto newWorker);
-    List<WorkerDto> GetAllWorkers();
+    void UpdateWorker(int workerId, CreateWorkerDto newWorker);
+    List<CreateWorkerDto> GetAllWorkers();
 }

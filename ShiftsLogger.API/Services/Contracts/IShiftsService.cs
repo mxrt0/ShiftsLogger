@@ -1,4 +1,4 @@
-﻿using ShiftsLogger.API.DTOs;
+﻿using ShiftsLogger.Data.DTOs;
 
 namespace ShiftsLogger.API.Services.Contracts;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using ShiftsLogger.API.DTOs;
 using ShiftsLogger.API.Exceptions;
 using ShiftsLogger.API.Services.Contracts;
+using ShiftsLogger.Data.DTOs;
 
 namespace ShiftsLogger.API.Controllers;
 

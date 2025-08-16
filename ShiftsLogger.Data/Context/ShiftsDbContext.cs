@@ -11,4 +11,14 @@ public class ShiftsDbContext : DbContext
     }
 
     public DbSet<Shift> Shifts { get; set; }
+    public DbSet<Worker> Workers { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Worker>()
+            .HasIndex(w => w.Name)
+            .IsUnique();
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

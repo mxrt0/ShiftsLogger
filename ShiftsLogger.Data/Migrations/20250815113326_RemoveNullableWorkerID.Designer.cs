@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShiftsLogger.Data.Context;
 
@@ -11,9 +12,11 @@ using ShiftsLogger.Data.Context;
 namespace ShiftsLogger.Data.Migrations
 {
     [DbContext(typeof(ShiftsDbContext))]
-    partial class ShiftsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250815113326_RemoveNullableWorkerID")]
+    partial class RemoveNullableWorkerID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,12 +65,9 @@ namespace ShiftsLogger.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Workers");
                 });

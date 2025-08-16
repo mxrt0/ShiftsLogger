@@ -1,6 +1,19 @@
-@ShiftsLogger.API_HostAddress = http://localhost:5034
+@ShiftsLogger.API_HostAddress = https://localhost:7194
 
-GET {{ShiftsLogger.API_HostAddress}}/weatherforecast/
+POST {{ShiftsLogger.API_HostAddress}}/shifts/add
 Accept: application/json
+Content-Type: application/json
+
+{
+  "date": "2025-08-15T00:00:00",
+  "start": "2025-08-15T09:00:00",
+  "end": "2025-08-15T18:00:00",
+  "workerId":1
+}
+###
+
+DELETE {{ShiftsLogger.API_HostAddress}}/shifts/delete/2
 
 ###
+
+PUT {{ShiftsLogger.API_HostAddress}}/shifts/update

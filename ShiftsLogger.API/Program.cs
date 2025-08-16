@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using ShiftsLogger.API.Services;
+using ShiftsLogger.API.Services.Contracts;
 using ShiftsLogger.Data.Context;
 
 namespace ShiftsLogger.API;
@@ -13,6 +15,9 @@ public class Program
 
         builder.Services.AddDbContext<ShiftsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+        builder.Services.AddScoped<IShiftsService, ShiftsService>();
+
+        builder.Services.AddScoped<IWorkerService, WorkerService>();
 
         builder.Services.AddControllers();
 

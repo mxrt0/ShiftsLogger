@@ -14,6 +14,12 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             UIHelper.DisplayMenu();
 
             string? userInput = Console.ReadLine();
+
+            while (!Validator.IsInputValid(userInput))
+            {
+                Console.WriteLine(Messages.InvalidInputMessage);
+                userInput = Console.ReadLine();
+            }
         }
     }
 }

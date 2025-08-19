@@ -1,14 +1,11 @@
-﻿using ShiftsLogger.Data.DTOs.Contracts;
-
-namespace ShiftsLogger.Data.DTOs
+﻿namespace ShiftsLogger.Data.DTOs
 {
-    public class CreateWorkerDto : IWorkerDto
+    public class CreateWorkerDto : WorkerDto
     {
         public CreateWorkerDto(string name)
         {
             Name = name;
         }
         public CreateWorkerDto() { }
-        public string Name { get; set; }
     }
 }

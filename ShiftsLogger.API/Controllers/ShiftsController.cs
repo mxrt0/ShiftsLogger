@@ -23,7 +23,7 @@ public class ShiftsController : ControllerBase
             _shiftsService.AddShift(shift);
             return Ok(new { Success = new[] { "Successfully inserted new shift record." } });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { Errors = new[] { "Something went wrong while adding the shift." } });
         }

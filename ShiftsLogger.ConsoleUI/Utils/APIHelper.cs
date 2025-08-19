@@ -21,7 +21,22 @@ public class APIHelper
     {
         var payload = JsonConvert.SerializeObject(shift);
         var content = new StringContent(payload, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("shifts/add", content);
+        var response = await _client.PostAsync("Shifts/add", content);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        string responseMessage;
+        if (!response.IsSuccessStatusCode)
+        {
+            responseMessage = JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse)?.Errors[0] ?? string.Empty;
+            return responseMessage;
+        }
+        return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
+    }
+
+    public async Task<string> PostWorkerAsync(CreateWorkerDto worker)
+    {
+        var payload = JsonConvert.SerializeObject(worker);
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+        var response = await _client.PostAsync("Workers/add", content);
         var jsonResponse = await response.Content.ReadAsStringAsync();
         string responseMessage;
         if (!response.IsSuccessStatusCode)

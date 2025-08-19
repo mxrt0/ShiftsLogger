@@ -29,34 +29,38 @@ namespace ShiftsLogger.ConsoleUI.Utils
             }
             input = input.Trim();
 
-            return TimeSpan.TryParseExact(input, "HH\\:mm", CultureInfo.InvariantCulture, out _);
+            return TimeSpan.TryParseExact(input, "hh\\:mm", CultureInfo.InvariantCulture, out TimeSpan time)
+                && time > TimeSpan.Zero && time < TimeSpan.FromDays(1);
         }
 
-        public static bool IsEndDateTimeValid(string? input, DateTime startDateTime)
+        public static bool TryGetValidEndDateTime(string? input, DateTime startDateTime, out DateTime result)
         {
-            if (string.IsNullOrEmpty(input))
-            {
+            result = default;
+
+            if (string.IsNullOrWhiteSpace(input))
                 return false;
-            }
 
             if (input.StartsWith("same", StringComparison.OrdinalIgnoreCase))
             {
-                if (string.Equals(input, "same", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
                 var parts = input.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 2)
-                {
+                if (parts.Length != 2)
                     return false;
-                }
 
-                return TimeSpan.TryParseExact(parts[1], "HH\\:mm", CultureInfo.InvariantCulture, out TimeSpan endTime)
-                 && endTime > startDateTime.TimeOfDay;
+                if (!TimeSpan.TryParseExact(parts[1], "hh\\:mm", CultureInfo.InvariantCulture, out var time))
+                    return false;
+
+                result = startDateTime.Date + time;
+                return result > startDateTime;
             }
-            return DateTime.TryParseExact(input, "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDateTime)
-                && endDateTime > startDateTime;
+
+            if (DateTime.TryParseExact(input, "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, out var endDateTime))
+            {
+                result = endDateTime;
+                return result > startDateTime;
+            }
+
+            return false;
         }
 
     }

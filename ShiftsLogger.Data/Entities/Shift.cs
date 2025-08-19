@@ -34,7 +34,7 @@ public class Shift
     {
         var sb = new StringBuilder();
         sb.AppendLine(new string('-', 35));
-        sb.AppendLine($"ID: {Id}\nDate: {Date.ToShortDateString()}\nDuration: {Duration.ToString("hh\\:mm")}");
+        sb.AppendLine($"ID: {Id}\nDate: {Date.ToShortDateString()}\nDuration: {Duration.ToString("hh\\:mm")} WorkerID: {WorkerId}");
         sb.AppendLine(new string('-', 35));
         return sb.ToString().TrimEnd();
     }

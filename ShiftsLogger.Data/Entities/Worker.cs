@@ -7,7 +7,7 @@ namespace ShiftsLogger.Data.Entities
         public Worker(string name)
         {
             Name = name;
-            Shifts = new List<Shift>();
+            Shifts = new();
         }
 
         public Worker()

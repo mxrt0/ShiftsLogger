@@ -17,7 +17,7 @@ public class ShiftsService : IShiftsService
     public void AddShift(ShiftDto shiftDto)
     {
         Shift newShift = new Shift();
-        ShiftMapper.ToEntity(shiftDto, newShift);
+        shiftDto.MapToEntity(newShift);
         _dbContext.Shifts.Add(newShift);
         _dbContext.SaveChanges();
     }
@@ -52,7 +52,7 @@ public class ShiftsService : IShiftsService
         var shiftToUpdate = _dbContext.Shifts.FirstOrDefault(s => s.Id == shiftId);
         if (shiftToUpdate is not null)
         {
-            ShiftMapper.ToEntity(newShift, shiftToUpdate);
+            ShiftMapper.MapToEntity(newShift, shiftToUpdate);
             _dbContext.SaveChanges();
             return;
         }

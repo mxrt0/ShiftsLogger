@@ -51,7 +51,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     //DeleteShift();
                     break;
                 case MenuOption.AddWorker:
-                    //AddWorker();
+                    await AddWorker();
                     break;
                 case MenuOption.ViewAllWorkers:
                     //ViewAllWorkers();
@@ -68,6 +68,22 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             await MainMenu();
         }
 
+        private async Task AddWorker()
+        {
+            Console.Clear();
+
+            Console.WriteLine(Messages.WorkerNameMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            string workerName = await GetWorkerNameInput();
+
+            var newWorker = new CreateWorkerDto(workerName);
+            string response = await _apiHelper.PostWorkerAsync(newWorker);
+            PrintResponse(response);
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
         private async Task AddShift()
         {
             Console.Clear();
@@ -82,7 +98,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
 
             Console.WriteLine(Messages.ShiftEndMessage);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            DateTime endTime = await GetShiftEndInput(startDate);
+            DateTime endTime = await GetShiftEndInput(startTime);
 
             await DisplayWorkers();
             Console.WriteLine(Messages.ShiftWorkerMessage);
@@ -91,12 +107,10 @@ namespace ShiftsLogger.ConsoleUI.Controllers
 
             var newShift = new ShiftDto(startDate, startTime, endTime, workerId);
             string response = await _apiHelper.PostShiftAsync(newShift);
-            if (string.IsNullOrEmpty(response))
-            {
-                Console.WriteLine("There was unexpectedly no response from the server!");
-                return;
-            }
-            Console.WriteLine(response);
+            PrintResponse(response);
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
         }
 
         private async Task CheckReturnToMainMenu(string? input)
@@ -115,7 +129,10 @@ namespace ShiftsLogger.ConsoleUI.Controllers
         {
             string? dateInput = Console.ReadLine();
             await CheckReturnToMainMenu(dateInput);
-
+            if (!string.IsNullOrEmpty(dateInput) && string.Equals(dateInput.Trim(), "today", StringComparison.OrdinalIgnoreCase))
+            {
+                return DateTime.Today;
+            }
             while (!Validator.IsDateValid(dateInput))
             {
                 Console.WriteLine(Messages.InvalidDateMessage);
@@ -143,23 +160,15 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             string? shiftEndInput = Console.ReadLine();
             await CheckReturnToMainMenu(shiftEndInput);
 
-            while (!Validator.IsEndDateTimeValid(shiftEndInput, startDateTime))
+            DateTime result;
+            while (!Validator.TryGetValidEndDateTime(shiftEndInput, startDateTime, out result))
             {
                 Console.WriteLine(Messages.InvalidEndTimeMessage);
                 shiftEndInput = Console.ReadLine();
                 await CheckReturnToMainMenu(shiftEndInput);
             }
-            if (shiftEndInput!.TrimStart().StartsWith("same", StringComparison.OrdinalIgnoreCase))
-            {
-                var parts = shiftEndInput.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
-                if (parts.Length == 2 && TimeSpan.TryParseExact(parts[1], "HH\\:mm", CultureInfo.InvariantCulture, out var time))
-                {
-                    return startDateTime.Date + time;
-                }
-            }
-
-            return DateTime.ParseExact(shiftEndInput!, "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            return result;
         }
 
         private async Task<int> GetWorkerInput()
@@ -168,21 +177,46 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             await CheckReturnToMainMenu(workerNameInput);
 
             var workers = await _apiHelper.FetchWorkersAsync();
-            while (string.IsNullOrEmpty(workerNameInput) || !workers.Any(w => w.Name == workerNameInput))
+            while (string.IsNullOrEmpty(workerNameInput) || !workers.Any(w => string.Equals(w.Name, workerNameInput, StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine(Messages.InvalidWorkerMessage);
                 Console.WriteLine(Messages.ReturnToMainMenuMessage);
                 workerNameInput = Console.ReadLine();
                 await CheckReturnToMainMenu(workerNameInput);
             }
-            return workers.First(w => w.Name == workerNameInput).Id;
+            return workers.First(w => string.Equals(w.Name, workerNameInput, StringComparison.OrdinalIgnoreCase)).Id;
         }
 
+        private async Task<string> GetWorkerNameInput()
+        {
+            string? workerNameInput = Console.ReadLine();
+            await CheckReturnToMainMenu(workerNameInput);
+
+            var workers = await _apiHelper.FetchWorkersAsync();
+            while (string.IsNullOrEmpty(workerNameInput) || workers.Any(w => string.Equals(w.Name, workerNameInput, StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine(Messages.InvalidWorkerNameMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                workerNameInput = Console.ReadLine();
+                await CheckReturnToMainMenu(workerNameInput);
+            }
+            return workerNameInput;
+        }
         private async Task DisplayWorkers()
         {
             var workers = await _apiHelper.FetchWorkersAsync();
-            Console.WriteLine(string.Join(Environment.NewLine, workers.Select(w => w.Name)));
+            Console.WriteLine("\nAvailable workers:" + Environment.NewLine + string.Join(Environment.NewLine, workers.Select(w => w.Name)));
             Console.WriteLine();
+        }
+
+        private void PrintResponse(string? response)
+        {
+            if (string.IsNullOrEmpty(response))
+            {
+                Console.WriteLine("\nThere was unexpectedly no response from the server!\n");
+                return;
+            }
+            Console.WriteLine(Environment.NewLine + response);
         }
     }
 }

@@ -17,7 +17,7 @@ public class WorkerService : IWorkerService
     public void AddWorker(CreateWorkerDto workerDto)
     {
         var worker = new Worker();
-        WorkerMapper.ToEntity(workerDto, worker);
+        workerDto.MapToEntity(worker);
         _dbContext.Workers.Add(worker);
         _dbContext.SaveChanges();
     }
@@ -34,7 +34,7 @@ public class WorkerService : IWorkerService
         throw new WorkerNotFoundException("No worker with this ID exists.");
     }
 
-    public List<CreateWorkerDto> GetAllWorkers()
+    public List<WorkerDto> GetAllWorkers()
     {
         return _dbContext.Workers.Select(w => w.ToWorkerDto()).ToList();
     }
@@ -44,7 +44,7 @@ public class WorkerService : IWorkerService
         var workerToUpdate = _dbContext.Workers.FirstOrDefault(w => w.Id == workerId);
         if (workerToUpdate is not null)
         {
-            WorkerMapper.ToEntity(newWorkerDto, workerToUpdate);
+            newWorkerDto.MapToEntity(workerToUpdate);
             _dbContext.SaveChanges();
             return;
         }

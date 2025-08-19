@@ -1,6 +1,8 @@
-﻿namespace ShiftsLogger.Data.DTOs
+﻿using ShiftsLogger.Data.DTOs.Contracts;
+
+namespace ShiftsLogger.Data.DTOs
 {
-    public class WorkerDto
+    public class WorkerDto : IWorkerDto
     {
         public WorkerDto(string name)
         {

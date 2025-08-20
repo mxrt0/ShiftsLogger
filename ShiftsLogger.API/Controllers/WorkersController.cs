@@ -24,7 +24,7 @@ namespace ShiftsLogger.API.Controllers
                 _workerService.AddWorker(worker);
                 return Ok(new { Success = new[] { "Successfully inserted new worker." } });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { Errors = new[] { "Something went wrong while adding the worker." } });
             }
@@ -61,6 +61,7 @@ namespace ShiftsLogger.API.Controllers
             {
                 return StatusCode(500, new { Errors = new[] { ex.Message } });
             }
+
         }
 
         [HttpDelete("{id}")]

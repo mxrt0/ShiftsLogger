@@ -402,9 +402,17 @@ namespace ShiftsLogger.ConsoleUI.Controllers
 
         private async Task DisplayWorkers()
         {
-            var workers = await _apiHelper.FetchWorkersAsync();
-            Console.WriteLine("\nAvailable workers:" + Environment.NewLine + string.Join(Environment.NewLine, workers.Select(w => w.Name)));
-            Console.WriteLine();
+            try
+            {
+                var workers = await _apiHelper.FetchWorkersAsync();
+                Console.WriteLine("\nAvailable workers:" + Environment.NewLine + string.Join(Environment.NewLine, workers.Select(w => w.Name)));
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
 
         private void PrintResponse(string? response)

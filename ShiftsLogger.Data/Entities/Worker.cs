@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ShiftsLogger.Data.Entities
+﻿namespace ShiftsLogger.Data.Entities
 {
     public class Worker
     {
@@ -18,7 +16,6 @@ namespace ShiftsLogger.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
 
-        [NotMapped]
         public List<Shift> Shifts { get; set; }
     }
 }

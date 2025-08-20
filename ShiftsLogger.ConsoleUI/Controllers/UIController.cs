@@ -48,7 +48,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     await UpdateShift();
                     break;
                 case MenuOption.DeleteShift:
-                    //DeleteShift();
+                    await DeleteShift();
                     break;
                 case MenuOption.AddWorker:
                     await AddWorker();
@@ -60,12 +60,82 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     await UpdateWorker();
                     break;
                 case MenuOption.DeleteWorker:
-                    //DeleteWorker();
+                    await DeleteWorker();
                     break;
                 default:
                     break;
             }
             await MainMenu();
+        }
+
+        private async Task DeleteWorker()
+        {
+            Console.Clear();
+            await DisplayWorkers();
+
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerToDeleteId = await GetWorkerInput();
+
+            Console.WriteLine("\nFound worker! Are you sure you wish to delete them [Y/N]:\n");
+            string? confirm = Console.ReadLine();
+            while (string.IsNullOrEmpty(confirm) || (confirm.ToLower() != "y" && confirm.ToLower() != "n"))
+            {
+                Console.WriteLine("\nInvalid input. Please enter either Y or N:\n");
+                confirm = Console.ReadLine();
+            }
+            if (confirm.ToLower() == "n")
+            {
+                return;
+            }
+            string response = await _apiHelper.DeleteWorker(workerToDeleteId);
+            PrintResponse(response);
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
+        private async Task DeleteShift()
+        {
+            Console.Clear();
+            Console.WriteLine("\nEnter the details of the shift you wish to delete:\n");
+            await DisplayWorkers();
+
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerId = await GetWorkerInput();
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            var startDate = await GetShiftDateInput();
+
+            (string _, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            while (result.Shift is null)
+            {
+                Console.WriteLine(Messages.ShiftDoesNotExistMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                workerId = await GetWorkerInput();
+
+                Console.WriteLine(Messages.ShiftStartDateMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                startDate = await GetShiftDateInput();
+
+                result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            }
+            Console.WriteLine("\nFound shift! Are you sure you wish to delete it [Y/N]:\n");
+            string? confirm = Console.ReadLine();
+            while (string.IsNullOrEmpty(confirm) || (confirm.ToLower() != "y" && confirm.ToLower() != "n"))
+            {
+                Console.WriteLine("\nInvalid input. Please enter either Y or N:\n");
+                confirm = Console.ReadLine();
+            }
+            if (confirm.ToLower() == "n")
+            {
+                return;
+            }
+            string response = await _apiHelper.DeleteShift(result.Shift.Id);
+            PrintResponse(response);
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
         }
 
         private async Task UpdateWorker()

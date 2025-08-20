@@ -107,4 +107,28 @@ public class APIHelper
         }
         return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
     }
+
+    public async Task<string> DeleteShift(int shiftId)
+    {
+        var url = $"Shifts/{shiftId}";
+        var response = await _client.DeleteAsync(url);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            return JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse)?.Errors[0] ?? string.Empty;
+        }
+        return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
+    }
+
+    public async Task<string> DeleteWorker(int workerId)
+    {
+        var url = $"Workers/{workerId}";
+        var response = await _client.DeleteAsync(url);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            return JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse)?.Errors[0] ?? string.Empty;
+        }
+        return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
+    }
 }

@@ -39,13 +39,13 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     await AddShift();
                     break;
                 case MenuOption.ViewShift:
-                    //ViewShift();
+                    await ViewShift();
                     break;
                 case MenuOption.ViewAllShifts:
-                    //ViewAllShifts();
+                    await ViewAllShifts();
                     break;
                 case MenuOption.UpdateShift:
-                    //UpdateShift();
+                    await UpdateShift();
                     break;
                 case MenuOption.DeleteShift:
                     //DeleteShift();
@@ -54,7 +54,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     await AddWorker();
                     break;
                 case MenuOption.ViewAllWorkers:
-                    //ViewAllWorkers();
+                    await ViewAllWorkers();
                     break;
                 case MenuOption.UpdateWorker:
                     //UpdateWorker();
@@ -66,6 +66,112 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     break;
             }
             await MainMenu();
+        }
+
+        private async Task UpdateShift()
+        {
+            Console.Clear();
+
+            await DisplayWorkers();
+            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerId = await GetWorkerInput();
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            var startDate = await GetShiftDateInput();
+
+            (string _, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            while (result.Shift is null)
+            {
+                Console.WriteLine(Messages.ShiftDoesNotExistMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                workerId = await GetWorkerInput();
+
+                Console.WriteLine(Messages.ShiftStartDateMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                startDate = await GetShiftDateInput();
+
+                result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            }
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            DateTime newStartDate = await GetShiftDateInput();
+
+            Console.WriteLine(Messages.ShiftStartTimeMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            DateTime newStartTime = await GetShiftStartInput(newStartDate);
+
+            Console.WriteLine(Messages.ShiftEndMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            DateTime newEndTime = await GetShiftEndInput(newStartTime);
+
+            await DisplayWorkers();
+            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int newWorkerId = await GetWorkerInput();
+
+            var updatedShift = new ShiftDto(newStartDate, newStartTime, newEndTime, newWorkerId);
+            string response = await _apiHelper.UpdateShift(result.Shift.Id, updatedShift);
+
+            PrintResponse(response);
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
+        private async Task ViewAllShifts()
+        {
+            Console.Clear();
+
+            (string Response, List<ShiftDto>? Shifts) result = await _apiHelper.GetAllShiftsAsync();
+            if (result.Shifts is null)
+            {
+                PrintResponse(result.Response);
+            }
+            else
+            {
+                Console.WriteLine(string.Join(Environment.NewLine, result.Shifts));
+            }
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
+        private async Task ViewAllWorkers()
+        {
+            Console.Clear();
+            await DisplayWorkers();
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
+        private async Task ViewShift()
+        {
+            Console.Clear();
+
+            await DisplayWorkers();
+            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerId = await GetWorkerInput();
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            var startDate = await GetShiftDateInput();
+
+            (string Response, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            if (result.Shift is not null)
+            {
+                Console.WriteLine(Environment.NewLine + result.Shift);
+            }
+            else
+            {
+                PrintResponse(result.Response);
+            }
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
         }
 
         private async Task AddWorker()
@@ -201,6 +307,20 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                 await CheckReturnToMainMenu(workerNameInput);
             }
             return workerNameInput;
+        }
+
+        private async Task<ShiftDto> GetExistingShift()
+        {
+            await DisplayWorkers();
+            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerId = await GetWorkerInput();
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            var startDate = await GetShiftDateInput();
+
+            (string Response, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
         }
         private async Task DisplayWorkers()
         {

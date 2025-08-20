@@ -30,5 +30,7 @@
 
         public static readonly string InvalidWorkerNameMessage = "\nInvalid worker name. Please enter a non-null string containing at least 1 letter that is not duplicate to an existing worker name!\n";
 
+        public static readonly string ShiftDoesNotExistMessage = "\nNo shift matching these details exists. Enter worker name again!\n";
+
     }
 }

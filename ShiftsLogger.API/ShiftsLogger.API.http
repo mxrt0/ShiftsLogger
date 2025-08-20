@@ -17,3 +17,7 @@ DELETE {{ShiftsLogger.API_HostAddress}}/shifts/delete/2
 ###
 
 PUT {{ShiftsLogger.API_HostAddress}}/shifts/update
+
+###
+
+GET {{ShiftsLogger.API_HostAddress}}/shifts/search?workerId=6&date=2025-08-20

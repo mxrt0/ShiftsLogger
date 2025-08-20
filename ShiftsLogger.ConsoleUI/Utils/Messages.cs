@@ -20,7 +20,7 @@
 
         public static readonly string ShiftEndMessage = "\nEnter the end date and time of the shift (Format: dd-MM-yyyy HH:mm).\nReplace the date with 'same' to use the start date (e.g. 'same 01:30'):\n";
 
-        public static readonly string ShiftWorkerMessage = "\nChoose one of the available workers:\n";
+        public static readonly string ShiftWorkerPrompt = "\nChoose one of the available workers:\n";
 
         public static readonly string InvalidWorkerMessage = "\nInvalid input. Please enter the name of an existing available worker!\n";
 

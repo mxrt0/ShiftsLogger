@@ -92,4 +92,19 @@ public class APIHelper
         }
         return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
     }
+
+    public async Task<string> UpdateWorker(int workerId, CreateWorkerDto newWorker)
+    {
+        var payload = JsonConvert.SerializeObject(newWorker);
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+        var url = $"Workers/{workerId}";
+
+        var response = await _client.PutAsync(url, content);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            return JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse)?.Errors[0] ?? string.Empty;
+        }
+        return JsonConvert.DeserializeObject<SuccessResponse>(jsonResponse)?.Success[0] ?? string.Empty;
+    }
 }

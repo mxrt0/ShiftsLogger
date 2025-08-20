@@ -57,7 +57,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                     await ViewAllWorkers();
                     break;
                 case MenuOption.UpdateWorker:
-                    //UpdateWorker();
+                    await UpdateWorker();
                     break;
                 case MenuOption.DeleteWorker:
                     //DeleteWorker();
@@ -68,12 +68,33 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             await MainMenu();
         }
 
+        private async Task UpdateWorker()
+        {
+            Console.Clear();
+
+            await DisplayWorkers();
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerToUpdateId = await GetWorkerInput();
+
+            Console.WriteLine("\nFound worker! Enter new name (must not be duplicate to any other worker):\n");
+            string newName = await GetWorkerNameInput();
+
+            var newWorker = new CreateWorkerDto(newName);
+            string response = await _apiHelper.UpdateWorker(workerToUpdateId, newWorker);
+            PrintResponse(response);
+
+            Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
+            Console.ReadKey();
+        }
+
         private async Task UpdateShift()
         {
             Console.Clear();
 
             await DisplayWorkers();
-            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine("\nEnter the details of the shift you wish to update:\n");
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             int workerId = await GetWorkerInput();
 
@@ -94,7 +115,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
 
                 result = await _apiHelper.GetShiftAsync(workerId, startDate);
             }
-
+            Console.WriteLine("\nFound shift! Now enter the new details:\n");
             Console.WriteLine(Messages.ShiftStartDateMessage);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             DateTime newStartDate = await GetShiftDateInput();
@@ -108,7 +129,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             DateTime newEndTime = await GetShiftEndInput(newStartTime);
 
             await DisplayWorkers();
-            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             int newWorkerId = await GetWorkerInput();
 
@@ -152,7 +173,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             Console.Clear();
 
             await DisplayWorkers();
-            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             int workerId = await GetWorkerInput();
 
@@ -207,7 +228,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             DateTime endTime = await GetShiftEndInput(startTime);
 
             await DisplayWorkers();
-            Console.WriteLine(Messages.ShiftWorkerMessage);
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             int workerId = await GetWorkerInput();
 
@@ -309,19 +330,6 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             return workerNameInput;
         }
 
-        private async Task<ShiftDto> GetExistingShift()
-        {
-            await DisplayWorkers();
-            Console.WriteLine(Messages.ShiftWorkerMessage);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            int workerId = await GetWorkerInput();
-
-            Console.WriteLine(Messages.ShiftStartDateMessage);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            var startDate = await GetShiftDateInput();
-
-            (string Response, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
-        }
         private async Task DisplayWorkers()
         {
             var workers = await _apiHelper.FetchWorkersAsync();

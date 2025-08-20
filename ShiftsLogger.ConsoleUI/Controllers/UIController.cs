@@ -99,28 +99,8 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             Console.Clear();
             Console.WriteLine("\nEnter the details of the shift you wish to delete:\n");
             await DisplayWorkers();
+            var shiftToDelete = GetExistingShift();
 
-            Console.WriteLine(Messages.ShiftWorkerPrompt);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            int workerId = await GetWorkerInput();
-
-            Console.WriteLine(Messages.ShiftStartDateMessage);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            var startDate = await GetShiftDateInput();
-
-            (string _, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
-            while (result.Shift is null)
-            {
-                Console.WriteLine(Messages.ShiftDoesNotExistMessage);
-                Console.WriteLine(Messages.ReturnToMainMenuMessage);
-                workerId = await GetWorkerInput();
-
-                Console.WriteLine(Messages.ShiftStartDateMessage);
-                Console.WriteLine(Messages.ReturnToMainMenuMessage);
-                startDate = await GetShiftDateInput();
-
-                result = await _apiHelper.GetShiftAsync(workerId, startDate);
-            }
             Console.WriteLine("\nFound shift! Are you sure you wish to delete it [Y/N]:\n");
             string? confirm = Console.ReadLine();
             while (string.IsNullOrEmpty(confirm) || (confirm.ToLower() != "y" && confirm.ToLower() != "n"))
@@ -132,7 +112,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             {
                 return;
             }
-            string response = await _apiHelper.DeleteShift(result.Shift.Id);
+            string response = await _apiHelper.DeleteShift(shiftToDelete.Id);
             PrintResponse(response);
             Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
             Console.ReadKey();
@@ -164,28 +144,9 @@ namespace ShiftsLogger.ConsoleUI.Controllers
 
             await DisplayWorkers();
             Console.WriteLine("\nEnter the details of the shift you wish to update:\n");
-            Console.WriteLine(Messages.ShiftWorkerPrompt);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            int workerId = await GetWorkerInput();
-
-            Console.WriteLine(Messages.ShiftStartDateMessage);
-            Console.WriteLine(Messages.ReturnToMainMenuMessage);
-            var startDate = await GetShiftDateInput();
-
-            (string _, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
-            while (result.Shift is null)
-            {
-                Console.WriteLine(Messages.ShiftDoesNotExistMessage);
-                Console.WriteLine(Messages.ReturnToMainMenuMessage);
-                workerId = await GetWorkerInput();
-
-                Console.WriteLine(Messages.ShiftStartDateMessage);
-                Console.WriteLine(Messages.ReturnToMainMenuMessage);
-                startDate = await GetShiftDateInput();
-
-                result = await _apiHelper.GetShiftAsync(workerId, startDate);
-            }
+            var shiftToUpdate = GetExistingShift();
             Console.WriteLine("\nFound shift! Now enter the new details:\n");
+
             Console.WriteLine(Messages.ShiftStartDateMessage);
             Console.WriteLine(Messages.ReturnToMainMenuMessage);
             DateTime newStartDate = await GetShiftDateInput();
@@ -204,7 +165,7 @@ namespace ShiftsLogger.ConsoleUI.Controllers
             int newWorkerId = await GetWorkerInput();
 
             var updatedShift = new ShiftDto(newStartDate, newStartTime, newEndTime, newWorkerId);
-            string response = await _apiHelper.UpdateShift(result.Shift.Id, updatedShift);
+            string response = await _apiHelper.UpdateShift(shiftToUpdate.Id, updatedShift);
 
             PrintResponse(response);
             Console.WriteLine(Messages.PressAnyKeyToContinueMessage);
@@ -413,6 +374,32 @@ namespace ShiftsLogger.ConsoleUI.Controllers
                 Console.WriteLine(ex.Message);
             }
 
+        }
+
+        private async Task<ShiftDto> GetExistingShift()
+        {
+            Console.WriteLine(Messages.ShiftWorkerPrompt);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            int workerId = await GetWorkerInput();
+
+            Console.WriteLine(Messages.ShiftStartDateMessage);
+            Console.WriteLine(Messages.ReturnToMainMenuMessage);
+            var startDate = await GetShiftDateInput();
+
+            (string _, ShiftDto? Shift) result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            while (result.Shift is null)
+            {
+                Console.WriteLine(Messages.ShiftDoesNotExistMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                workerId = await GetWorkerInput();
+
+                Console.WriteLine(Messages.ShiftStartDateMessage);
+                Console.WriteLine(Messages.ReturnToMainMenuMessage);
+                startDate = await GetShiftDateInput();
+
+                result = await _apiHelper.GetShiftAsync(workerId, startDate);
+            }
+            return result.Shift;
         }
 
         private void PrintResponse(string? response)
